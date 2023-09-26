@@ -213,32 +213,44 @@ message NvmePath {
     // Transport type
     NvmeTransportType trtype = 3 [(google.api.field_behavior) = REQUIRED];
 
-    // Destination address (e.g. IP address, BDF for local PCIe)
-    string traddr = 4 [(google.api.field_behavior) = REQUIRED];
+    // One of the values is required
+    // see https://github.com/aip-dev/google.aip.dev/issues/1147 for field_behavior annotations
+    oneof path {
+        // Required for Nvme over fabrics transport types
+        FabricsPath fabrics = 4 [(google.api.field_behavior) = OPTIONAL];
 
-    // Not applicable for local PCIe. Required for Nvme over fabrics transport types
-    FabricsPath fabrics = 5 [(google.api.field_behavior) = OPTIONAL];
+        /*
+        ??? we can use the PciPath below instead pci endpoint
+        message PciPath {
+            string bdf = 1 [(google.api.field_behavior) = REQUIRED];
+        }
+        PciPath pcie = 5 [(google.api.field_behavior) = OPTIONAL];
+        */
+        // Required for pcie transport type.
+        PciEndpoint pcie = 5 [(google.api.field_behavior) = OPTIONAL];
+    }
 }
 
 // Represents Fabrics transport path parameters
 message FabricsPath {
-    // Destination service id (e.g. Port)
-    int64 trsvcid = 1 [(google.api.field_behavior) = REQUIRED];
+    // Fabrics endpoint
+    FabricsEndpoint endpoint = 1 [(google.api.field_behavior) = REQUIRED];
 
     // Subsystem NQN
     string subnqn = 2 [(google.api.field_behavior) = REQUIRED];
 
-    // Address family
-    NvmeAddressFamily adrfam = 3 [(google.api.field_behavior) = REQUIRED];
-
+    /*
+    ??? Shoud we use FabricsEndpoint to join source_traddr and source_trsvcid
+    ??? if yes, should we create a dedicated message to incorporate enpoint and nqn?
+    */
     // Source address (e.g. IP of local NIC)
-    string source_traddr = 4 [(google.api.field_behavior) = OPTIONAL];
+    string source_traddr = 3 [(google.api.field_behavior) = OPTIONAL];
 
     // Source port (e.g. Port of local NIC)
-    int64 source_trsvcid = 5 [(google.api.field_behavior) = OPTIONAL];
+    int64 source_trsvcid = 4 [(google.api.field_behavior) = OPTIONAL];
 
     // Host NQN
-    string hostnqn = 6 [(google.api.field_behavior) = OPTIONAL];
+    string hostnqn = 5 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Represent Nvme namespace created on bridge after connection to a target

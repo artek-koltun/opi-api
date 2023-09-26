@@ -28,11 +28,16 @@ message PciEndpoint {
     // plugged into a particular host. This number may end up matching
     // the host-assigned "device" value in the bus:device:function identifier,
     // but it does not strictly have to and that should not be relied upon.
+    //
+    // BDF "bus" part for backend API or
+    // "domain" + "bus" calculated as 0x100 * "domain" + "bus"
     google.protobuf.Int32Value port_id = 1 [(google.api.field_behavior) = REQUIRED];
 
     // Physical function index. This may end up matching the host-assigned
     // "function" value in the bus:device:function identifier, but it does not
     // strictly have to and that should not be relied upon.
+    //
+    // BDF "device" part for backend API
     google.protobuf.Int32Value  physical_function = 2 [(google.api.field_behavior) = REQUIRED];
 
     // Virtual function index. 1-based index.
@@ -40,6 +45,8 @@ message PciEndpoint {
     // This may end up matching the host-assigned "function" value in the
     // bus:device:function identifier, but it does not strictly have to and
     // that should not be relied upon.
+    //
+    // BDF "function" part for backend API
     google.protobuf.Int32Value  virtual_function = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
